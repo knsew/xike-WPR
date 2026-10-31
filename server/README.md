@@ -2,7 +2,19 @@
 
 只含数据库服务，不含 App、不含前端。镜像很小：`python:3.12-alpine` + 一个 `server.py`（Python 标准库，零第三方依赖），约 50MB 级别。
 
-## 部署（在运行机上做，本机沙箱不 build 镜像）
+## 部署（推荐：直接拉 GHCR 镜像，不用 build）
+
+```bash
+# 部署机上只需要两个文件：docker-compose.pull.yml（改名为 docker-compose.yml）+ .env（由 .env.example 复制并填管理员手机号与强密码）
+docker compose pull
+docker compose up -d
+curl http://127.0.0.1:8000/health
+```
+
+镜像：`ghcr.io/knsew/pti-server:0.1.0-test`，由 GitHub Actions（`.github/workflows/docker.yml`）在公开仓构建并推送到 GHCR。
+如 GHCR 包是私有可见，部署机先 `docker login ghcr.io`（用有 read:packages 权限的 token）再 pull；包设为公开后可免登录直接 pull。
+
+## 部署（备选：本地 build）
 
 ```bash
 cd server
