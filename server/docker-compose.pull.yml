@@ -1,0 +1,18 @@
+# 部署用：直接拉 GHCR 镜像，不用本地 build、不需要源码。
+# 部署机上只需要这两个文件：docker-compose.pull.yml（改名为 docker-compose.yml）+ .env
+services:
+  pti-server:
+    image: ghcr.io/knsew/pti-server:0.1.0-test
+    container_name: pti-server
+    restart: unless-stopped
+    ports:
+      - "${PTI_PORT:-8000}:8000"
+    volumes:
+      # 数据库只在这里：宿主机 ./data ↔ 容器 /data，镜像里没有数据库。
+      # 转移服务 = docker compose down → 拷走 ./data → 新机器上再 up。
+      - ./data:/data
+    env_file:
+      - .env
+    environment:
+      - PORT=8000
+      - PTI_DB_PATH=/data/pti.db
